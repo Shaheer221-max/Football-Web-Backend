@@ -18,7 +18,7 @@ const registerValidationSchema = Joi.object({
 });
 
 const playerController = {
-  async addplayer(Objectreq, res) {
+  async addplayer(req, res) {
     const { error } = registerValidationSchema.validate(req.body);
     if (error) {
       console.log(error.details[0].message);
