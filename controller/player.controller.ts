@@ -4,24 +4,21 @@ import playerr from "../models/player.model";
 const jwt = require("jsonwebtoken");
 const Joi = require("@hapi/joi");
 
-
-
 //validation for register data
 const registerValidationSchema = Joi.object({
   name: Joi.string().min(3).required(),
   email: Joi.string().required(),
   fatherEmail: Joi.string().required(),
   position: Joi.string().required(),
-  phone : Joi.number().integer(),
-  dateOfBirth : Joi.date().required(),
-  dateJoined : Joi.string().required(),
+  phone: Joi.number().integer(),
+  dateOfBirth: Joi.date().required(),
+  dateJoined: Joi.string().required(),
   image: Joi.string().required(),
   isPlayer: Joi.boolean(),
 });
 
-
 const playerController = {
-  async addplayer(req, res) {
+  async addplayer(Objectreq, res) {
     const { error } = registerValidationSchema.validate(req.body);
     if (error) {
       console.log(error.details[0].message);
@@ -35,12 +32,9 @@ const playerController = {
       if (emailExists) {
         console.log("already exisits");
         res.status(400).send("Player Already exists");
-      }
-      else if(playerData.image == false){
+      } else if (playerData.image == false) {
         res.status(400).send("Image not selected");
-      }
-       else {
-       
+      } else {
         player.save((error, registeredPlayer) => {
           if (error) {
             res.send(error.message);
@@ -56,21 +50,19 @@ const playerController = {
               phone: registeredPlayer.phone,
               fatherEmail: registeredPlayer.fatherEmail,
               position: registeredPlayer.position,
-              dateOfBirth : registeredPlayer.date,
-              dateJoined : registeredPlayer.dateJoined,
+              dateOfBirth: registeredPlayer.date,
+              dateJoined: registeredPlayer.dateJoined,
               image: registeredPlayer.image,
-              isPlayer : registeredPlayer.isPlayer,
+              isPlayer: registeredPlayer.isPlayer,
               _id: registeredPlayer._id,
             });
           }
         });
       }
     }
+  },
 
-
-   },
-
-   async getPlayer(req, res) {
+  async getPlayer(req, res) {
     let user = req.query;
     let data = await playerr.find({
       startedBy: user.startedBy,
@@ -78,7 +70,7 @@ const playerController = {
     res.status(200).send({
       data: data,
     });
-  }, 
+  },
 
   async totalPlayer(req, res) {
     let user = req.query;
@@ -87,35 +79,32 @@ const playerController = {
     let data = await playerr.find({
       startedBy: user.startedBy,
     });
-    data.map((val,ind) => {
-      if(val.dateLeft){
+    data.map((val, ind) => {
+      if (val.dateLeft) {
         playerLeft++;
+      } else {
+        playerPresent++;
       }
-      else{
-        playerPresent++
-      }
-    })
+    });
 
     res.status(200).send({
       totalPlayer: data.length,
-      playerLeft : playerLeft,
-      playerPresent : playerPresent
+      playerLeft: playerLeft,
+      playerPresent: playerPresent,
     });
-  }, 
+  },
 
   async findPlayer(req, res) {
-    
-      const playername = req.params.name;
-      const foundplayer = await playerr.find({ name: playername });
+    const playername = req.params.name;
+    const foundplayer = await playerr.find({ name: playername });
 
-      if (!foundplayer) {
-        res.status(400).send("Player not exist");
-      } else{
-        res.status(200).send({
-          data: foundplayer,
-        });
-      }
-     
+    if (!foundplayer) {
+      res.status(400).send("Player not exist");
+    } else {
+      res.status(200).send({
+        data: foundplayer,
+      });
+    }
   },
 };
 
