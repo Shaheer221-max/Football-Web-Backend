@@ -65,80 +65,74 @@ const clubhubController = {
 
 //router.post('/user-profile', upload.single('profileImg'), 
 async uploadFile(req, res, next) {
+    const id = req.params.id;
+    const file = req.file.filename
+    let size = req.file.size
+    let fileSiseInMb
+    const date = new Date();
+    
+    console.log("file uploaded", id, file, size)
+    if (id.toString() === "false"){
+      res.status(400).send("Please Select the Folder");
+    }
+    else if (!file){
+      res.status(400).send("File not selected");
+    }
+    else {
+      if(size < 1048576){
+          fileSiseInMb = (Math.floor(size / 1024)) + "Kb"
+      }else {
+        fileSiseInMb = (Math.floor(size / (1024 * 1024))) + "Mb"
+      }
+      
+      const nameExists = await clubhub.find({
+        _id: id,
+        files : {
+          $elemMatch : {
+            name : file
+          }
+          
+        }
+      });
+      //if (!nameExists)
+      {
+        const newFile = {
+          name : file,
+          date : date,
+          size : fileSiseInMb
+        }
+        const upload = await clubhub.findOneAndUpdate(
+              {_id : id},
+              {$push : {
+                files : newFile
+              }}
+          )
+          res.status(200).send({
+              data: upload.files,
+            });
 
+      } 
+      //else{
+      //     res.status(400).send("File with same name Already Exists");
+      //   }
+      
+    }
 
-
-
-
-  
-    // const url = req.protocol + '://' + req.get('host')
-    // const folder = req.params.name;
-    // const file = req.body.file;
-
-    // if (!file){
-    //   res.status(400).send("post cannot be empty");
-    // }
-    //else{
-    //   const upload = await clubhub.findOneAndUpdate(
-    //     {name : folder},
-    //     {$push : {
-    //       files : {
-    //         file : '/public/' + file.filename,
-    //       }
-    //     }}
-    // )
-    // res.status(200).send({
-    //   data: upload,
-    // });
-     // }
     
 },
 
-//   async uploadFile(req, res) {
-   
-//       let clubhubData = req.body;
-//       let clubhubb = new clubhub(clubhubData);
-      
-       
-//         clubhubb.save((error, folder) => {
-//           if (error) {
-//             res.send(error.message);
-//           } else {
-//             const token = jwt.sign(
-//               { _id: folder._id },
-//               process.env.TOKEN_SECRET
-//             );
-//             res.status(200).send({
-//               authToken: token,
-//               name: folder.name,
-//               _id: folder._id,
-//             });
-//           }
-//         });
-//   },
+async getFile(req, res) {
+  let id = req.params.id
+  let data = await clubhub.find({
+    _id: id,
+  });
+  
+  res.status(200).send({
+    data: data[0].files,
+  });
+},
 
-//  async addFiles(req, res){
-//   clubhub.findOneAndUpdate({name : req.params.name}, {
-//     $set: {
-//       name: req.body.name,
-//       files : req.body.files
-//     }
-//   })
-//   .then(result => {
-//     res.status(200).json({
-//       updated_folder : result
-//     })
-//   })
-//   .catch(error => {
-//     res.send(error.message);
-//   })
-//   // clubhub.findByIdAndUpdate({name : req.params.name}, req.body).
-//   // then (function() {
-//   //     clubhub.findOne({name : req.params}).then (function (clubhub){
-//   //       response.send(clubhub);
-//   //     })
-//   // })
-//  },
+
   
 
   async getFolders(req, res) {
@@ -151,14 +145,6 @@ async uploadFile(req, res, next) {
       data: data,
     });
   },
-
-  
-  // // multer files
-
-  // async uploadFiles(req,res){
-  //   res.send("Image Uploaded");
-  // },
-
 
 };
 

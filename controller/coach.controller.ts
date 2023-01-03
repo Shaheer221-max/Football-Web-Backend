@@ -107,6 +107,19 @@ const coachController = {
     });
   },
 
+  async totalCoach(req, res) {
+    let user = req.query;
+    let data = await coachh.find({
+      startedBy: user.startedBy,
+    });
+    let length = data.length
+    console.log(length)
+    
+    res.status(200).send({
+      data: data.length,
+    });
+  },
+
   async getcoachByEmail(req, res) {
     const coachData = req.params.email;
     console.log(coachData);

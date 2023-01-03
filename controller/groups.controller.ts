@@ -1,5 +1,6 @@
 import router from "../routes/main.route";
 import group from "../models/groups.model";
+import likesController from "../controller/likes.controller";
 import upload from "../middleware/uploadFiles.middleware";
 
 const jwt = require("jsonwebtoken");
