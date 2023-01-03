@@ -7,7 +7,7 @@ const groupsRouter = express.Router();
 
 groupsRouter.post("/createfolder", clubhubController.createFolder);
 groupsRouter.get("/getfolder/:email", clubhubController.getFolders);
-groupsRouter.post('/profile', upload.single('file'), clubhubController.uploadFile);
-
+groupsRouter.post('/uploadFile/:id', upload.single('fileupload'), clubhubController.uploadFile);
+groupsRouter.get('/getFile/:id',clubhubController.getFile);
 
 export default groupsRouter;
